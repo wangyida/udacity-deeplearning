@@ -6,7 +6,7 @@
 # ## Get the Data
 # Since translating the whole language of English to French will take lots of time to train, we have provided you with a small portion of the English corpus.
 
-# In[1]:
+# In[12]:
 
 """
 DON'T MODIFY ANYTHING IN THIS CELL
@@ -23,7 +23,7 @@ target_text = helper.load_data(target_path)
 # ## Explore the Data
 # Play around with view_sentence_range to view different parts of the data.
 
-# In[7]:
+# In[2]:
 
 view_sentence_range = (0, 10)
 
@@ -59,7 +59,7 @@ print('\n'.join(target_text.split('\n')[view_sentence_range[0]:view_sentence_ran
 # ```
 # You can get other word ids using `source_vocab_to_int` and `target_vocab_to_int`.
 
-# In[8]:
+# In[3]:
 
 def text_to_ids(source_text, 
                 target_text, 
@@ -78,19 +78,12 @@ def text_to_ids(source_text,
     # this is will be a list of 2 loops with 
     # form of [[...], [...],...[...]], all int inside!
     
-    # To fix: I don't know why split(' ') doesn't work
-    source_id_text = [[source_vocab_to_int[so_l] 
-                       for so_l in s_text.split()] 
-                      for s_text in source_text.split('\n')]  
-    target_id_text = [[target_vocab_to_int[tar_l] 
-                       for tar_l in tar_text.split()] 
-                      for tar_text in target_text.split('\n')]
-    
-    # Step 2: Adding ending again
-    # all a EOF id for every sentences
-    for t in target_id_text:
-        if t and  t[-1] != target_vocab_to_int['<EOS>']:
-            t += [target_vocab_to_int['<EOS>']]
+    source_id_text = [[source_vocab_to_int[w]
+                       for w in s.split()] 
+                      for s in source_text.split('\n')]
+    target_id_text = [[target_vocab_to_int[w] 
+                       for w in s.split()] + [target_vocab_to_int['<EOS>']] 
+                      for s in target_text.split('\n')]
             
     return source_id_text, target_id_text
 
@@ -103,7 +96,7 @@ tests.test_text_to_ids(text_to_ids)
 # ### Preprocess all the data and save it
 # Running the code cell below will preprocess all the data and save it to file.
 
-# In[9]:
+# In[4]:
 
 """
 DON'T MODIFY ANYTHING IN THIS CELL
@@ -114,7 +107,7 @@ helper.preprocess_and_save_data(source_path, target_path, text_to_ids)
 # # Check Point
 # This is your first checkpoint. If you ever decide to come back to this notebook or have to restart the notebook, you can start from here. The preprocessed data has been saved to disk.
 
-# In[10]:
+# In[5]:
 
 """
 DON'T MODIFY ANYTHING IN THIS CELL
@@ -129,7 +122,7 @@ import helper
 # ### Check the Version of TensorFlow and Access to GPU
 # This will check to make sure you have the correct version of TensorFlow and access to a GPU
 
-# In[11]:
+# In[6]:
 
 """
 DON'T MODIFY ANYTHING IN THIS CELL
@@ -137,9 +130,6 @@ DON'T MODIFY ANYTHING IN THIS CELL
 from distutils.version import LooseVersion
 import warnings
 import tensorflow as tf
-import os
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 
 # Check TensorFlow Version
 assert LooseVersion(
@@ -177,7 +167,7 @@ else:
 # 
 # Return the placeholders in the following the tuple (Input, Targets, Learing Rate, Keep Probability)
 
-# In[12]:
+# In[7]:
 
 def model_inputs():
     """
@@ -199,7 +189,7 @@ tests.test_model_inputs(model_inputs)
 # ### Process Decoding Input
 # Implement `process_decoding_input` using TensorFlow to remove the last word id from each batch in `target_data` and concat the GO ID to the beginning of each batch.
 
-# In[13]:
+# In[8]:
 
 def process_decoding_input(target_data, 
                            target_vocab_to_int, 
@@ -238,7 +228,7 @@ tests.test_process_decoding_input(process_decoding_input)
 # ### Encoding
 # Implement `encoding_layer()` to create a Encoder RNN layer using [`tf.nn.dynamic_rnn()`](https://www.tensorflow.org/api_docs/python/tf/nn/dynamic_rnn).
 
-# In[14]:
+# In[9]:
 
 def encoding_layer(rnn_inputs, 
                    rnn_size, 
@@ -276,7 +266,7 @@ tests.test_encoding_layer(encoding_layer)
 # ### Decoding - Training
 # Create training logits using [`tf.contrib.seq2seq.simple_decoder_fn_train()`](https://www.tensorflow.org/versions/r1.0/api_docs/python/tf/contrib/seq2seq/simple_decoder_fn_train) and [`tf.contrib.seq2seq.dynamic_rnn_decoder()`](https://www.tensorflow.org/versions/r1.0/api_docs/python/tf/contrib/seq2seq/dynamic_rnn_decoder).  Apply the `output_fn` to the [`tf.contrib.seq2seq.dynamic_rnn_decoder()`](https://www.tensorflow.org/versions/r1.0/api_docs/python/tf/contrib/seq2seq/dynamic_rnn_decoder) outputs.
 
-# In[15]:
+# In[11]:
 
 def decoding_layer_train(encoder_state, 
                          dec_cell, 
@@ -306,8 +296,10 @@ def decoding_layer_train(encoder_state,
         dec_embed_input, 
         sequence_length, 
         scope=decoding_scope)
+    # It's recommended to use dropout in before output_fn() method. 
+    # This will decrease the number of computations.
+    outputs = tf.nn.dropout(outputs, keep_prob)
     logits = output_fn(outputs)
-    logits = tf.nn.dropout(logits, keep_prob)
     
     return logits
 
@@ -320,7 +312,7 @@ tests.test_decoding_layer_train(decoding_layer_train)
 # ### Decoding - Inference
 # Create inference logits using [`tf.contrib.seq2seq.simple_decoder_fn_inference()`](https://www.tensorflow.org/versions/r1.0/api_docs/python/tf/contrib/seq2seq/simple_decoder_fn_inference) and [`tf.contrib.seq2seq.dynamic_rnn_decoder()`](https://www.tensorflow.org/versions/r1.0/api_docs/python/tf/contrib/seq2seq/dynamic_rnn_decoder). 
 
-# In[16]:
+# In[13]:
 
 def decoding_layer_infer(encoder_state, 
                          dec_cell, 
@@ -383,7 +375,7 @@ tests.test_decoding_layer_infer(decoding_layer_infer)
 # 
 # Note: You'll need to use [tf.variable_scope](https://www.tensorflow.org/api_docs/python/tf/variable_scope) to share variables between training and inference.
 
-# In[17]:
+# In[14]:
 
 def decoding_layer(dec_embed_input, 
                    dec_embeddings, 
@@ -458,7 +450,7 @@ tests.test_decoding_layer(decoding_layer)
 # - Apply embedding to the target data for the decoder.
 # - Decode the encoded input using your `decoding_layer(dec_embed_input, dec_embeddings, encoder_state, vocab_size, sequence_length, rnn_size, num_layers, target_vocab_to_int, keep_prob)`.
 
-# In[18]:
+# In[15]:
 
 def seq2seq_model(input_data, 
                   target_data, 
@@ -551,20 +543,20 @@ tests.test_seq2seq_model(seq2seq_model)
 # In[19]:
 
 # Number of Epochs
-epochs = 5
+epochs = 15
 # Batch Size
-batch_size = 512
+batch_size = 256
 # RNN Size
-rnn_size = 256
+rnn_size = 128
 # Number of Layers
-num_layers = 2
+num_layers = 3
 # Embedding Size
-encoding_embedding_size = 64
-decoding_embedding_size = 64
+encoding_embedding_size = 256
+decoding_embedding_size = 256
 # Learning Rate
-learning_rate = 0.01
+learning_rate = 0.005
 # Dropout Keep Probability
-keep_probability = 0.75
+keep_probability = 0.5
 
 
 # ### Build the Graph
@@ -680,13 +672,12 @@ with tf.Session(graph=train_graph) as sess:
             train_acc = get_accuracy(target_batch, batch_train_logits)
             valid_acc = get_accuracy(np.array(valid_target), batch_valid_logits)
             end_time = time.time()
-            if batch_i%100 == 0:
-                print('Epoch {:>3} Batch {:>4}/{} - Train Accuracy: {:>6.3f}, Validation Accuracy: {:>6.3f}, Loss: {:>6.3f}'
-                      .format(epoch_i, batch_i, 
-                              len(source_int_text) // batch_size, 
-                              train_acc, 
-                              valid_acc, 
-                              loss))
+            print('Epoch {:>3} Batch {:>4}/{} - Train Accuracy: {:>6.3f}, Validation Accuracy: {:>6.3f}, Loss: {:>6.3f}'
+                  .format(epoch_i, batch_i, 
+                          len(source_int_text) // batch_size, 
+                          train_acc, 
+                          valid_acc, 
+                          loss))
 
     # Save Model
     saver = tf.train.Saver()
@@ -730,7 +721,7 @@ load_path = helper.load_params()
 # - Convert words into ids using `vocab_to_int`
 #  - Convert words not in the vocabulary, to the `<UNK>` word id.
 
-# In[24]:
+# In[26]:
 
 def sentence_to_seq(sentence, vocab_to_int):
     """
@@ -739,6 +730,7 @@ def sentence_to_seq(sentence, vocab_to_int):
     :param vocab_to_int: Dictionary to go from the words to an id
     :return: List of word ids
     """
+    #sentence = lower(sentence) 
     word_id_list = [vocab_to_int.get(word, vocab_to_int['<UNK>']) for word in sentence.split()]
     return word_id_list
 
@@ -752,7 +744,7 @@ tests.test_sentence_to_seq(sentence_to_seq)
 # ## Translate
 # This will translate `translate_sentence` from English to French.
 
-# In[25]:
+# In[27]:
 
 translate_sentence = 'he saw a old yellow truck .'
 
