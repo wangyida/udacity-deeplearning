@@ -11789,7 +11789,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -11821,7 +11821,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">view_sentence_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
@@ -11912,7 +11912,7 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">text_to_ids</span><span class="p">(</span><span class="n">source_text</span><span class="p">,</span> 
@@ -12036,7 +12036,7 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12313,7 +12313,7 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">decoding_layer_train</span><span class="p">(</span><span class="n">encoder_state</span><span class="p">,</span> 
@@ -12390,7 +12390,7 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">decoding_layer_infer</span><span class="p">(</span><span class="n">encoder_state</span><span class="p">,</span> 
@@ -12428,12 +12428,10 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
     
     <span class="c1"># We just need the outputs of the decoder, final_state, final_context_state</span>
     <span class="c1"># are not necessary here</span>
-    <span class="n">outputs</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">seq2seq</span><span class="o">.</span><span class="n">dynamic_rnn_decoder</span><span class="p">(</span>
+    <span class="n">inference_logits</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">seq2seq</span><span class="o">.</span><span class="n">dynamic_rnn_decoder</span><span class="p">(</span>
         <span class="n">dec_cell</span><span class="p">,</span> 
         <span class="n">decoder_fn</span><span class="p">,</span> 
         <span class="n">scope</span><span class="o">=</span><span class="n">decoding_scope</span><span class="p">)</span>
-    
-    <span class="n">inference_logits</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">keep_prob</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">inference_logits</span>
 
@@ -12484,7 +12482,7 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">decoding_layer</span><span class="p">(</span><span class="n">dec_embed_input</span><span class="p">,</span> 
@@ -12530,18 +12528,19 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
             <span class="n">output_fn</span><span class="p">,</span> 
             <span class="n">keep_prob</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">variable_scope</span><span class="p">(</span><span class="s2">&quot;decoding&quot;</span><span class="p">,</span> <span class="n">reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">decoding_scope</span><span class="p">:</span>
-        <span class="n">inference_logits</span> <span class="o">=</span>  <span class="n">decoding_layer_infer</span><span class="p">(</span>
-            <span class="n">encoder_state</span><span class="p">,</span> 
-            <span class="n">dec_cell</span><span class="p">,</span> 
-            <span class="n">dec_embeddings</span><span class="p">,</span> 
-            <span class="n">start_id</span><span class="p">,</span> 
-            <span class="n">end_id</span><span class="p">,</span> 
-            <span class="n">sequence_length</span><span class="p">,</span> 
-            <span class="n">vocab_size</span><span class="p">,</span> 
-            <span class="n">decoding_scope</span><span class="p">,</span> 
-            <span class="n">output_fn</span><span class="p">,</span> 
-            <span class="n">keep_prob</span><span class="p">)</span>
+    <span class="n">decoding_scope</span><span class="o">.</span><span class="n">reuse_variables</span><span class="p">()</span>
+    
+    <span class="n">inference_logits</span> <span class="o">=</span>  <span class="n">decoding_layer_infer</span><span class="p">(</span>
+        <span class="n">encoder_state</span><span class="p">,</span> 
+        <span class="n">dec_cell</span><span class="p">,</span> 
+        <span class="n">dec_embeddings</span><span class="p">,</span> 
+        <span class="n">start_id</span><span class="p">,</span> 
+        <span class="n">end_id</span><span class="p">,</span> 
+        <span class="n">sequence_length</span><span class="p">,</span> 
+        <span class="n">vocab_size</span><span class="p">,</span> 
+        <span class="n">decoding_scope</span><span class="p">,</span> 
+        <span class="n">output_fn</span><span class="p">,</span> 
+        <span class="n">keep_prob</span><span class="p">)</span>
         
     <span class="k">return</span> <span class="n">training_logits</span><span class="p">,</span> <span class="n">inference_logits</span>
 
@@ -21096,10 +21095,10 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">translate_sentence</span> <span class="o">=</span> <span class="s1">&#39;he saw a old yellow truck .&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">translate_sentence</span> <span class="o">=</span> <span class="s1">&#39;he saw a old yellow truck on the street .&#39;</span>
 
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -21141,12 +21140,12 @@ Model Trained and Saved
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Input
-  Word Ids:      [80, 138, 142, 38, 23, 154, 132]
-  English Words: [&#39;he&#39;, &#39;saw&#39;, &#39;a&#39;, &#39;old&#39;, &#39;yellow&#39;, &#39;truck&#39;, &#39;.&#39;]
+  Word Ids:      [80, 138, 142, 38, 23, 154, 2, 144, 2, 132]
+  English Words: [&#39;he&#39;, &#39;saw&#39;, &#39;a&#39;, &#39;old&#39;, &#39;yellow&#39;, &#39;truck&#39;, &#39;&lt;UNK&gt;&#39;, &#39;the&#39;, &#39;&lt;UNK&gt;&#39;, &#39;.&#39;]
 
 Prediction
-  Word Ids:      [165, 323, 181, 144, 340, 12, 262, 312, 1]
-  French Words: [&#39;il&#39;, &#39;a&#39;, &#39;vu&#39;, &#39;un&#39;, &#39;vieux&#39;, &#39;camion&#39;, &#39;jaune&#39;, &#39;.&#39;, &#39;&lt;EOS&gt;&#39;]
+  Word Ids:      [165, 314, 46, 324, 349, 213, 131, 21, 312, 1]
+  French Words: [&#39;il&#39;, &#39;envisage&#39;, &#39;de&#39;, &#39;visiter&#39;, &#39;les&#39;, &#39;états-unis&#39;, &#39;en&#39;, &#39;septembre&#39;, &#39;.&#39;, &#39;&lt;EOS&gt;&#39;]
 </pre>
 </div>
 </div>
