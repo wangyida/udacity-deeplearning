@@ -627,7 +627,9 @@ valid_target = target_int_text[:batch_size]
                                                                                                              batch_size,
                                                                                                              source_vocab_to_int['<PAD>'],
                                                                                                              target_vocab_to_int['<PAD>']))                                                                                                  
-with tf.Session(graph=train_graph) as sess:
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+with tf.Session(graph=train_graph, config=config) as sess:
     sess.run(tf.global_variables_initializer())
 
     for epoch_i in range(epochs):
@@ -750,7 +752,7 @@ DON'T MODIFY ANYTHING IN THIS CELL
 translate_sentence = sentence_to_seq(translate_sentence, source_vocab_to_int)
 
 loaded_graph = tf.Graph()
-with tf.Session(graph=loaded_graph) as sess:
+with tf.Session(graph=loaded_graph, config=config) as sess:
     # Load saved model
     loader = tf.train.import_meta_graph(load_path + '.meta')
     loader.restore(sess, load_path)
